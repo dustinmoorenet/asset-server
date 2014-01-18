@@ -1,0 +1,25 @@
+{
+  "name": "asset-server",
+  "version": "0.0.0",
+  "description": "An asset server for serving up files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dustinmoorenet/asset-server.git"
+  },
+  "keywords": [
+    "fileserver"
+  ],
+  "author": "Dustin Moore",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dustinmoorenet/asset-server/issues"
+  },
+  "homepage": "https://github.com/dustinmoorenet/asset-server",
+  "devDependencies": {
+    "grunt": "~0.4.2"
+  }
+}
