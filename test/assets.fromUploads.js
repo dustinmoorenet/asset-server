@@ -38,7 +38,7 @@ describe('assets', function() {
         }
       ];
 
-      this.assets.fromUpload(uploads);
+      this.assets.fromUploads(uploads);
 
       expect(false).to.be(true);
     });
