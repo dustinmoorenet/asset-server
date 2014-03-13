@@ -4,6 +4,7 @@ var expect = require('expect.js'),
 describe('asset', function() {
   it('should create an Asset model', function() {
     var asset = new Asset({
+      id: '8ee07a1f-599f-4ee9-b3c6-8cfce400f4b3',
       label: 'That Movie',
       original_name: 'movie.mov',
       size: 1024
@@ -13,28 +14,6 @@ describe('asset', function() {
 
     expect(asset.id).to.have.length(36);
   });
-
-  it('should define an ID when none is given', function() {
-    var asset = new Asset({
-      label: 'That Movie',
-      original_name: 'movie.mov',
-      size: 1024
-    });
-
-    expect(asset.id).to.have.length(36);
-  });
-
-  it('should keep the ID it is given', function() {
-    var asset = new Asset({
-      id: 'this-fake-id',
-      label: 'That Movie',
-      original_name: 'movie.mov',
-      size: 1024
-    });
-
-    expect(asset.id).to.be('this-fake-id');
-  });
-  
 
   describe('.initialize()', function() {
     beforeEach(function() {
