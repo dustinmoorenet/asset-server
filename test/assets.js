@@ -1,49 +1,49 @@
 var uuid = require('node-uuid'),
+    Q = require('q'),
     child_process = require('child_process'),
+    exec = Q.denodeify(child_process.exec),
     expect = require('expect.js'),
     Assets = require('../lib/assets');
 
-describe('assets', function() {
+describe('assets.init()', function() {
   beforeEach(function() {
     this.store = '/tmp/blah' + uuid.v4();
   });
 
   it('should complain if store is not there', function() {
-    expect(function() {
       var assets = new Assets(this.store);
 
-    }.bind(this)).to.throwException(Assets.InvalidStoreDirectory);
+      var promise = assets.init()
+        .then(function() { throw new Error('should have validated false') }, function() { /* this is what we expected */ })
   });
 
-  it('should create store if store is not there (force_create)', function(done) {
-    expect(function() {
-      var assets = new Assets(this.store, true);
+  it('should create store if store is not there (force_create)', function() {
+      var assets = new Assets(this.store);
 
-      expect(assets.validate()).to.be(true);
-
-      done();
-
-    }.bind(this)).to.not.throwException();
+      return assets.init(true);
   });
 
-  it('should fix store structure if something is missing (force_create)', function(done) {
-      var assets = new Assets(this.store, true);
+  it('should fix store structure if something is missing (force_create)', function() {
+      var assets = new Assets(this.store);
 
-      child_process.exec('rm -rf ' + assets.root + '/indexes', function() {
-        expect(assets.validate()).to.be(false);
+      var promise = assets.init(true)
+        .then(function() { return exec('rm -rf ' + assets.root + '/indexes'); })
+        .then(function() { return assets.validate() })
+        .then(function() { throw new Error('should have validated false') }, function() { /* this is what we expected */ })
+        .then(function() {
+          var assets_2 = new Assets(assets.root);
 
-        var assets_2 = new Assets(assets.root, true);
+          var promise = assets_2.init(true)
+            .then(function() { return assets.validate() })
+            .then(function() { return assets_2.validate() });
 
-        expect(assets.validate()).to.be(true);
+          return promise;
+        })
 
-        expect(assets_2.validate()).to.be(true);
-
-        done();
-      });
-
+      return promise;
   });
 
-  afterEach(function(done) {
-    child_process.exec('rm -rf ' + this.store, done);
+  afterEach(function() {
+    return exec('rm -rf ' + this.store);
   });
 });

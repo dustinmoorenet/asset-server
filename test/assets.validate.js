@@ -1,32 +1,34 @@
 var uuid = require('node-uuid'),
+    Q = require('q'),
     child_process = require('child_process'),
+    exec = Q.denodeify(child_process.exec),
     expect = require('expect.js'),
     Assets = require('../lib/assets');
 
-describe('assets', function() {
-  describe('.validate()', function() {
-    beforeEach(function() {
-      var store = '/tmp/' + uuid.v4();
+describe('assets.validate()', function() {
+  beforeEach(function() {
+    var store = '/tmp/' + uuid.v4();
 
-      this.assets = new Assets(store, true);
-    });
+    this.assets = new Assets(store, true);
 
-    it('should return false if something is missing', function(done) {
+    return this.assets.init(true);
+  });
 
-        child_process.exec('rm -rf ' + this.assets.root + '/assets', function() {
-          expect(this.assets.validate()).to.be(false);
+  it('should return false if something is missing', function() {
 
-          done();
-        }.bind(this));
-    });
+    var promise = exec('rm -rf ' + this.assets.root + '/assets')
+      .then(function() { return this.assets.validate() }.bind(this))
+      .then(function() { throw new Error('should have validated false') }, function() { /* this is what we expected */ });
 
-    it('should return true if everything is there', function() {
+    return promise;
+  });
 
-        expect(this.assets.validate()).to.be(true);
-    });
+  it('should return true if everything is there', function() {
 
-    afterEach(function(done) {
-      child_process.exec('rm -rf ' + this.assets.root, done);
-    });
+    return this.assets.validate();
+  });
+
+  afterEach(function() {
+    return exec('rm -rf ' + this.assets.root);
   });
 });

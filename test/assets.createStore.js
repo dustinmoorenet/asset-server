@@ -1,36 +1,40 @@
 var uuid = require('node-uuid'),
+    Q = require('q'),
     child_process = require('child_process'),
+    exec = Q.denodeify(child_process.exec),
     expect = require('expect.js'),
     Assets = require('../lib/assets');
 
-describe('assets', function() {
-  describe('.createStore()', function() {
-    beforeEach(function() {
-      var store = '/tmp/' + uuid.v4();
+describe('assets.createStore()', function() {
+  beforeEach(function() {
+    var store = '/tmp/' + uuid.v4();
 
-      this.assets = new Assets(store, true);
-    });
+    this.assets = new Assets(store);
 
-    it('should repair store if something is missing', function(done) {
+    return this.assets.init(true);
+  });
 
-        child_process.exec('rm -rf ' + this.assets.root + '/assets', function() {
-          this.assets.createStore();
+  it('should repair store if something is missing', function() {
 
-          expect(this.assets.validate()).to.be(true);
+    var promise =
+      exec('rm -rf ' + this.assets.root + '/assets')
+      .then(function() { return this.assets.createStore(); }.bind(this))
+      .then(function() { return this.assets.validate(); }.bind(this));
 
-          done();
+    return promise;
+  });
 
-        }.bind(this));
-    });
+  it('should not complain if everything is there', function() {
 
-    it('should not complain if everything is there', function() {
+    var promise =
+      this.assets.createStore()
+      .then(function() { return this.assets.validate(); }.bind(this));
 
-        expect(this.assets.createStore).to.not.throwException();
-    });
+    return promise;
+  });
 
-    afterEach(function(done) {
-      child_process.exec('rm -rf ' + this.assets.root, done);
-    });
+  afterEach(function() {
+    return exec('rm -rf ' + this.assets.root);
   });
 });
 
