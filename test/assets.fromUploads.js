@@ -12,7 +12,11 @@ describe('assets.fromUploads()', function() {
 
     this.assets = new Assets(store);
 
-    sinon.stub(this.assets, 'put');
+    var deferred = Q.defer();
+    deferred.resolve();
+
+    sinon.stub(this.assets, 'putMeta', function() { return deferred.promise });
+    sinon.stub(this.assets, 'putData');
 
     return this.assets.init(true);
   });
@@ -41,9 +45,13 @@ describe('assets.fromUploads()', function() {
       }
     ];
 
-    this.assets.fromUploads(uploads);
+    var promise = this.assets.fromUploads(uploads)
+    .then(function() {
+      expect(this.assets.putMeta.callCount).to.be(4);
+      expect(this.assets.putData.callCount).to.be(4);
+    }.bind(this));
 
-    expect(this.assets.put.callCount).to.be(4);
+    return promise;
   });
 
   afterEach(function() {
