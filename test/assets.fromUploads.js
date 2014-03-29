@@ -11,10 +11,7 @@ describe('assets.fromUploads()', function() {
 
     this.assets = new Assets(store);
 
-    var deferred = Q.defer();
-    deferred.resolve();
-
-    sinon.stub(this.assets, 'putMeta', function() { return deferred.promise });
+    sinon.stub(this.assets, 'putMeta', function() { return Q('') });
     sinon.stub(this.assets, 'putData');
 
     return this.assets.init(true);

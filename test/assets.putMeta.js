@@ -10,10 +10,6 @@ describe('assets.putMeta()', function() {
   beforeEach(function() {
     this.store = '/tmp/blah' + uuid.v4();
 
-    this.fixture = {
-      file: this.store + '/file'
-    };
-
     this.assets = new Assets(this.store);
 
     return this.assets.init(true);
