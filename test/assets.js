@@ -1,7 +1,6 @@
 var uuid = require('node-uuid'),
     Q = require('q'),
-    child_process = require('child_process'),
-    exec = Q.denodeify(child_process.exec),
+    exec = require('../lib/child_process.extras').exec,
     expect = require('expect.js'),
     Assets = require('../lib/assets');
 
@@ -29,7 +28,10 @@ describe('assets.init()', function() {
       var promise = assets.init(true)
         .then(function() { return exec('rm -rf ' + assets.root + '/indexes'); })
         .then(function() { return assets.validate() })
-        .then(function() { throw new Error('should have validated false') }, function() { /* this is what we expected */ })
+        .then(
+          function() { throw new Error('should have validated false') },
+          function() { /* this is what we expected */ }
+        )
         .then(function() {
           var assets_2 = new Assets(assets.root);
 

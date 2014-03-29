@@ -1,7 +1,6 @@
 var uuid = require('node-uuid'),
     Q = require('q'),
-    child_process = require('child_process'),
-    exec = Q.denodeify(child_process.exec),
+    exec = require('../lib/child_process.extras').exec,
     expect = require('expect.js'),
     sinon = require('sinon'),
     Assets = require('../lib/assets');

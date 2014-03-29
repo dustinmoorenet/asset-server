@@ -6,7 +6,7 @@ var uuid = require('../lib/uuid'),
     Asset = require('../lib/asset'),
     fs = require('fs');
 
-describe('assets.putData()', function() {
+describe('assets.delete()', function() {
   beforeEach(function() {
     this.store = '/tmp/blah' + uuid.v4();
 
@@ -24,7 +24,7 @@ describe('assets.putData()', function() {
     return promise;
   });
 
-  it('should save the file to the asset directory', function() {
+  it('should remove the asset directory', function() {
     var asset = new Asset({
       id: '8ee07a1f-599f-4ee9-b3c6-8cfce400f4b3',
       label: 'That File',
@@ -42,7 +42,23 @@ describe('assets.putData()', function() {
       this.assets.putMeta(asset)
       .then(function() { return this.assets.putData(asset) }.bind(this))
       .then(function() { return Q.nfcall(fs.stat, data_file) })
-      .then(function(stat) { expect(stat.size).to.be(10100) });
+      .then(function() { return this.assets.delete(asset) }.bind(this))
+      .then(function() { return Q.nfcall(fs.stat, data_file) })
+      .then(
+        function() { throw new Error('asset should have been deleted') },
+        function() { /* this is what we expected */ }
+      );
+
+    return promise;
+  });
+
+  it('should complain when UUID is blank', function() {
+    var promise =
+      this.assets.delete({id: ''})
+      .then(
+        function() { return Q.reject(new Error('should not try to delete with empty id')) },
+        function() { /* this is what we expected */ }
+      );
 
     return promise;
   });
