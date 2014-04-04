@@ -29,18 +29,14 @@ describe('assets.putData()', function() {
       id: '8ee07a1f-599f-4ee9-b3c6-8cfce400f4b3',
       label: 'That File',
       original_name: 'file_1.txt',
-      tags: [],
-      uri: {
-        type: 'file',
-        location: this.fixture.file
-      }
+      tags: []
     });
 
     var data_file = this.store + '/8ee07a1f/599f/4ee9/b3c6/8cfce400f4b3/data';
 
     var promise =
       this.assets.putMeta(asset)
-      .then(function() { return this.assets.putData(asset) }.bind(this))
+      .then(function() { return this.assets.putData(asset, this.fixture.file) }.bind(this))
       .then(function() { return Q.nfcall(fs.stat, data_file) })
       .then(function(stat) { expect(stat.size).to.be(10100) });
 

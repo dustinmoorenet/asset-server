@@ -18,28 +18,28 @@ describe('assets.fromUploads()', function() {
   });
 
   it('should import new file uploads into the assets instance', function() {
-    var uploads = [
-      {
+    var uploads = { 
+      'movie_1.mov': {
         name: 'movie_1.mov',
         size: 1024,
         type: 'application/mov'
       },
-      {
+      'movie_2.mov': {
         name: 'movie_2.mov',
         size: 1024,
         type: 'application/mov'
       },
-      {
+      'movie_3.mov': {
         name: 'movie_3.mov',
         size: 1024,
         type: 'application/mov'
       },
-      {
+      'movie_4.mov': {
         name: 'movie_4.mov',
         size: 1024,
         type: 'application/mov'
       }
-    ];
+    };
 
     var promise = this.assets.fromUploads(uploads)
     .then(function() {

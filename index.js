@@ -31,12 +31,14 @@ app.get(program.url + '/:id',
    * @returns {json} Meta information about asset
    */
   function(req, res) {
-    var asset = assets.get(req.params.id);
 
-    if (asset)
-      res.json(asset);
-    else
-      res.json(404, {error: 'Asset not found'});
+    assets
+      .get(req.params.id)
+      .done(function(asset) {
+        res.json(asset);
+      }, function() {
+        res.json(404, {error: 'Asset not found'});
+      });
   }
 );
 
@@ -52,17 +54,13 @@ app.get(program.url + '/data/:id',
    *                          that has the file
    */
   function(req, res) {
-    var asset = assets.get(req.params.id);
-
-    if (asset)
-      var uri = asset.uri;
-
-      if (uri.type == 'file')
-        res.download(uri.location, asset.original_name);
-      else
-        res.redirect(uri.location);
-    else
-      res.json(404, {error: 'Asset not found'});
+    assets
+      .getData(req.params.id)
+      .done(function(file) {
+        res.download(file.path, file.name);
+      }, function() {
+        res.json(404, {error: 'Asset not found'});
+      });
   }
 );
 
@@ -77,19 +75,13 @@ app.post(program.url,
    * @returns {json} Meta information about asset
    */
   function(req, res) {
-    var finished_count = 0,
-        file_names = Object.keys(req.files);
-  
-    file_names.forEach(function(file_name) {
-  
-      assets.post(req.files[file_name], function(err) {
-        finished_count++;
-        if (finished_count == file_names.length)
-          res.send('');
+    assets
+      .fromUploads(req.files)
+      .done(function() {
+        res.send('');
+      }, function(err) {
+        res.send(500, {error: 'Upload failed', raw_error: err});
       });
-    });
-  
-    assets.post(file);
   }
 );
 
@@ -125,6 +117,10 @@ app.delete(program.url + '/:id',
   }
 );
 
-app.listen(3001);
+assets
+  .init(true)
+  .then(function() {
+    app.listen(3001);
 
-console.log('Listening on port 3001');
+    console.log('Listening on port 3001');
+  });
