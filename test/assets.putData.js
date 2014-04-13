@@ -36,7 +36,7 @@ describe('assets.putData()', function() {
 
     var promise =
       this.assets.putMeta(asset)
-      .then(function() { return this.assets.putData(asset, this.fixture.file) }.bind(this))
+      .then(function() { return this.assets.putData(asset.id, this.fixture.file) }.bind(this))
       .then(function() { return Q.nfcall(fs.stat, data_file) })
       .then(function(stat) { expect(stat.size).to.be(10100) });
 

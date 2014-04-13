@@ -35,7 +35,7 @@ describe('assets.getData()', function() {
 
     var promise =
       this.assets.putMeta(asset)
-      .then(function() { return this.assets.putData(asset, this.fixture.file) }.bind(this))
+      .then(function() { return this.assets.putData(asset.id, this.fixture.file) }.bind(this))
       .then(function() { return this.assets.getData(asset.id) }.bind(this))
       .then(function(file) {
         expect(file).to.eql({
@@ -53,7 +53,7 @@ describe('assets.getData()', function() {
       .then(function() {
         throw new Error('ID is invalid and should not return success');
       }, function(err) {
-        expect(err.message).to.be('Invalid asset ID, cannot get data');
+        expect(err + '').to.be('(null) is an invalid asset ID');
       });
 
     return promise;

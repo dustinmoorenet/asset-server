@@ -40,9 +40,9 @@ describe('assets.delete()', function() {
 
     var promise =
       this.assets.putMeta(asset)
-      .then(function() { return this.assets.putData(asset) }.bind(this))
+      .then(function() { return this.assets.putData(asset.id) }.bind(this))
       .then(function() { return Q.nfcall(fs.stat, data_file) })
-      .then(function() { return this.assets.delete(asset) }.bind(this))
+      .then(function() { return this.assets.delete(asset.id) }.bind(this))
       .then(function() { return Q.nfcall(fs.stat, data_file) })
       .then(
         function() { throw new Error('asset should have been deleted') },
@@ -54,7 +54,7 @@ describe('assets.delete()', function() {
 
   it('should complain when UUID is blank', function() {
     var promise =
-      this.assets.delete({id: ''})
+      this.assets.delete('')
       .then(
         function() { return Q.reject(new Error('should not try to delete with empty id')) },
         function() { /* this is what we expected */ }
